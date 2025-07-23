@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 自訂全域樣式 */
+body {
+    font-family: 'Noto Sans TC', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 頁面切換動畫 */
+.page-enter-active,
+.page-leave-active {
+    transition: opacity 0.3s, transform 0.3s;
+}
+.page-enter-from,
+.page-leave-to {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+/* 拖曳時的佔位樣式 */
+.sortable-ghost {
+    opacity: 0.4;
+    background: #e0f2fe; /* light-blue-100 */
+    border: 2px dashed #0ea5e9; /* sky-500 */
+}
+
+/* 自訂滑桿樣式 */
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #10b981; /* emerald-500 */
+    cursor: pointer;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    margin-top: -8px; /* 垂直置中 */
+}
+
+input[type=range]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #10b981; /* emerald-500 */
+    cursor: pointer;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
