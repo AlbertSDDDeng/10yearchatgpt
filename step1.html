@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>五十歲願景｜十年規劃</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-50 min-h-screen flex items-center justify-center">
+  <div class="bg-white rounded-3xl shadow-xl p-8 max-w-lg w-full flex flex-col">
+    <div class="mb-3 text-gray-400">步驟 1 / 7</div>
+    <h2 class="text-2xl font-bold text-indigo-600 mb-3">五十歲願景</h2>
+    <p class="mb-4 text-gray-700">
+      請想像十年後的你，描述你希望的生活狀態或大目標。<br>
+      <span class="text-sm text-gray-400">（例如：財務自由、健康活力、家庭美滿、環遊世界…）</span>
+    </p>
+    <textarea id="vision" rows="4" class="rounded-xl border-gray-300 p-3 mb-4 text-lg focus:ring-indigo-300 focus:border-indigo-400" placeholder="請輸入你的願景..."></textarea>
+    <button onclick="nextStep()"
+      class="bg-indigo-500 text-white rounded-full py-3 text-lg shadow hover:bg-indigo-600 transition-all">下一步</button>
+  </div>
+  <script>
+    function nextStep() {
+      const vision = document.getElementById('vision').value.trim();
+      if (!vision) { alert("請輸入願景！"); return; }
+      localStorage.setItem('vision', vision);
+      location.href = 'step2.html';
+    }
+  </script>
+</body>
+</html>

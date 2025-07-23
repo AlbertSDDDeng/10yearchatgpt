@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>行動計畫｜十年規劃</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-50 min-h-screen flex items-center justify-center">
+  <div class="bg-white rounded-3xl shadow-xl p-8 max-w-lg w-full flex flex-col">
+    <div class="mb-3 text-gray-400">步驟 6 / 7</div>
+    <h2 class="text-2xl font-bold text-indigo-600 mb-3">行動計畫</h2>
+    <p class="mb-4 text-gray-700">列出你打算實踐目標的具體步驟。</p>
+    <div class="flex gap-2 mb-4">
+      <input id="actionInput" type="text" class="flex-grow rounded-lg border-gray-300 p-2" placeholder="輸入一個行動項目..." />
+      <button onclick="addAction()" class="bg-indigo-500 text-white rounded-lg px-4 py-2 shadow hover:bg-indigo-600 transition-all">新增</button>
+    </div>
+    <ul id="actionsList" class="list-disc pl-6 space-y-2 mb-4"></ul>
+    <button onclick="nextStep()" class="bg-green-500 text-white rounded-full py-3 text-lg shadow hover:bg-green-600 transition-all">完成並查看成果</button>
+  </div>
+  <script>
+    let actions = [];
+    // Load existing actions if any
+    try {
+      actions = JSON.parse(localStorage.getItem('actions')) || [];
+    } catch (e) { actions = []; }
+
+    function render() {
+      const list = document.getElementById('actionsList');
+      list.innerHTML = actions.map((a, i) => `<li class="flex justify-between items-center bg-blue-50 p-2 rounded-lg">${a}<button onclick="removeAction(${i})" class="text-red-500 ml-2">刪除</button></li>`).join('');
+    }
+    function addAction() {
+      const val = document.getElementById('actionInput').value.trim();
+      if (!val) return;
+      actions.push(val);
+      document.getElementById('actionInput').value = '';
+      localStorage.setItem('actions', JSON.stringify(actions));
+      render();
+    }
+    function removeAction(i) {
+      actions.splice(i, 1);
+      localStorage.setItem('actions', JSON.stringify(actions));
+      render();
+    }
+    function nextStep() {
+      localStorage.setItem('actions', JSON.stringify(actions));
+      location.href = 'step7.html';
+    }
+    render();
+  </script>
+</body>
+</html>

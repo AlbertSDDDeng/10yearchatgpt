@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>成果總覽｜十年規劃</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+<body class="bg-blue-50 min-h-screen flex items-center justify-center">
+  <div class="bg-white rounded-3xl shadow-xl p-8 max-w-2xl w-full">
+    <div class="mb-3 text-gray-400">步驟 7 / 7</div>
+    <h2 class="text-2xl font-bold text-indigo-600 mb-3">成果總覽</h2>
+    <div id="summary" class="space-y-6 mb-6"></div>
+    <div class="flex items-center gap-4">
+      <button onclick="exportExcel()"
+        class="bg-green-500 text-white rounded-full py-3 px-6 text-lg shadow hover:bg-green-600 transition-all">匯出 Excel</button>
+      <a href="index.html" class="text-indigo-400 underline">回首頁</a>
+    </div>
+  </div>
+  <script>
+    function display() {
+      const vision = localStorage.getItem('vision') || '';
+      const aspects = JSON.parse(localStorage.getItem('aspects') || '{}');
+      const metrics = JSON.parse(localStorage.getItem('metrics') || '{}');
+      const status = JSON.parse(localStorage.getItem('status') || '{}');
+      const gap = localStorage.getItem('gap') || '';
+      const actions = JSON.parse(localStorage.getItem('actions') || '[]');
+      const summaryEl = document.getElementById('summary');
+      summaryEl.innerHTML = `
+        <div>
+          <h3 class="font-bold text-lg text-indigo-600 mb-1">五十歲願景</h3>
+          <div class="bg-blue-50 p-3 rounded">${vision || '—'}</div>
+        </div>
+        <div>
+          <h3 class="font-bold text-lg text-indigo-600 mb-1">六大面向理想狀態</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            ${Object.entries(aspects).map(([k,v])=>`<div class="bg-blue-50 p-3 rounded"><b>${translateAspect(k)}</b>：${v || '—'}</div>`).join('')}
+          </div>
+        </div>
+        <div>
+          <h3 class="font-bold text-lg text-indigo-600 mb-1">量化目標</h3>
+          <div class="bg-blue-50 p-3 rounded">
+            財務：年收入 ${metrics.income || '—'} 萬<br>
+            健康：每周運動 ${metrics.workout || '—'} 次<br>
+            家庭：每年旅遊 ${metrics.travel || '—'} 次
+          </div>
+        </div>
+        <div>
+          <h3 class="font-bold text-lg text-indigo-600 mb-1">現況檢視</h3>
+          <div class="bg-blue-50 p-3 rounded">
+            年收入 ${status.incomeNow || '—'} 萬、每周運動 ${status.workoutNow || '—'} 次、去年旅遊 ${status.travelNow || '—'} 次
+          </div>
+        </div>
+        <div>
+          <h3 class="font-bold text-lg text-indigo-600 mb-1">差距分析</h3>
+          <div class="bg-blue-50 p-3 rounded">${gap || '—'}</div>
+        </div>
+        <div>
+          <h3 class="font-bold text-lg text-indigo-600 mb-1">行動計畫</h3>
+          <ul class="list-disc pl-6 space-y-1">
+            ${actions && actions.length ? actions.map(a=>`<li>${a}</li>`).join('') : '<li>—</li>'}
+          </ul>
+        </div>
+      `;
+    }
+    function translateAspect(key) {
+      const map = {
+        finance: '財務',
+        health: '健康',
+        family: '家庭',
+        career: '事業',
+        social: '人際',
+        mind: '心靈／學習'
+      };
+      return map[key] || key;
+    }
+
+    function exportExcel() {
+      const wb = XLSX.utils.book_new();
+      const data = [];
+      const vision = localStorage.getItem('vision') || '';
+      data.push(['五十歲願景', vision]);
+      const aspects = JSON.parse(localStorage.getItem('aspects') || '{}');
+      Object.entries(aspects).forEach(([k,v])=> {
+        data.push([`${translateAspect(k)}理想狀態`, v || '']);
+      });
+      const metrics = JSON.parse(localStorage.getItem('metrics') || '{}');
+      data.push(['財務目標年收入', metrics.income || '']);
+      data.push(['健康目標每周運動次數', metrics.workout || '']);
+      data.push(['家庭目標旅遊次數/年', metrics.travel || '']);
+      const status = JSON.parse(localStorage.getItem('status') || '{}');
+      data.push(['現況年收入', status.incomeNow || '']);
+      data.push(['現況每周運動次數', status.workoutNow || '']);
+      data.push(['現況去年旅遊次數', status.travelNow || '']);
+      const gap = localStorage.getItem('gap') || '';
+      data.push(['差距分析', gap]);
+      const actions = JSON.parse(localStorage.getItem('actions') || '[]');
+      data.push(['行動計畫', actions.join('; ')]);
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      XLSX.utils.book_append_sheet(wb, ws, '十年規劃');
+      XLSX.writeFile(wb, 'ten_year_plan.xlsx');
+    }
+    display();
+  </script>
+</body>
+</html>

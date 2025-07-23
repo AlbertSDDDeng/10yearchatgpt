@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>現況檢視｜十年規劃</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-50 min-h-screen flex items-center justify-center">
+  <div class="bg-white rounded-3xl shadow-xl p-8 max-w-lg w-full flex flex-col">
+    <div class="mb-3 text-gray-400">步驟 4 / 7</div>
+    <h2 class="text-2xl font-bold text-indigo-600 mb-3">現況檢視</h2>
+    <p class="mb-5 text-gray-700">請填寫目前的實際狀態。</p>
+    <form id="statusForm" class="space-y-4">
+      <div>
+        <label class="block text-indigo-500 font-semibold mb-1">目前年收入 (萬)</label>
+        <input type="number" step="0.1" name="incomeNow" class="w-full rounded-lg border-gray-300 p-2" placeholder="例如：60" />
+      </div>
+      <div>
+        <label class="block text-green-500 font-semibold mb-1">每週實際運動次數</label>
+        <input type="number" step="1" name="workoutNow" class="w-full rounded-lg border-gray-300 p-2" placeholder="例如：1" />
+      </div>
+      <div>
+        <label class="block text-pink-500 font-semibold mb-1">去年旅遊次數</label>
+        <input type="number" step="1" name="travelNow" class="w-full rounded-lg border-gray-300 p-2" placeholder="例如：0" />
+      </div>
+      <button type="button" onclick="nextStep()" class="mt-6 bg-indigo-500 text-white rounded-full py-3 text-lg shadow hover:bg-indigo-600 transition-all">下一步</button>
+    </form>
+  </div>
+  <script>
+    function nextStep() {
+      const form = document.getElementById('statusForm');
+      const data = {
+        incomeNow: form.incomeNow.value.trim(),
+        workoutNow: form.workoutNow.value.trim(),
+        travelNow: form.travelNow.value.trim(),
+      };
+      localStorage.setItem('status', JSON.stringify(data));
+      location.href = 'step5.html';
+    }
+  </script>
+</body>
+</html>

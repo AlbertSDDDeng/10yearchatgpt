@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>量化目標｜十年規劃</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-50 min-h-screen flex items-center justify-center">
+  <div class="bg-white rounded-3xl shadow-xl p-8 max-w-lg w-full flex flex-col">
+    <div class="mb-3 text-gray-400">步驟 3 / 7</div>
+    <h2 class="text-2xl font-bold text-indigo-600 mb-3">量化目標</h2>
+    <p class="mb-5 text-gray-700">為你的願景設定具體的數字目標。</p>
+    <form id="metricsForm" class="space-y-4">
+      <div>
+        <label class="block text-indigo-500 font-semibold mb-1">目標年收入 (萬)</label>
+        <input type="number" step="0.1" name="income" class="w-full rounded-lg border-gray-300 p-2" placeholder="例如：100" />
+      </div>
+      <div>
+        <label class="block text-green-500 font-semibold mb-1">每週運動次數</label>
+        <input type="number" step="1" name="workout" class="w-full rounded-lg border-gray-300 p-2" placeholder="例如：3" />
+      </div>
+      <div>
+        <label class="block text-pink-500 font-semibold mb-1">每年旅遊次數</label>
+        <input type="number" step="1" name="travel" class="w-full rounded-lg border-gray-300 p-2" placeholder="例如：2" />
+      </div>
+      <button type="button" onclick="nextStep()" class="mt-6 bg-indigo-500 text-white rounded-full py-3 text-lg shadow hover:bg-indigo-600 transition-all">下一步</button>
+    </form>
+  </div>
+  <script>
+    function nextStep() {
+      const form = document.getElementById('metricsForm');
+      const data = {
+        income: form.income.value.trim(),
+        workout: form.workout.value.trim(),
+        travel: form.travel.value.trim(),
+      };
+      // all fields optional; if blank, set null or empty
+      localStorage.setItem('metrics', JSON.stringify(data));
+      location.href = 'step4.html';
+    }
+  </script>
+</body>
+</html>

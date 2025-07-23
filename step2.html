@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>生活目標細分｜十年規劃</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-50 min-h-screen flex items-center justify-center">
+  <div class="bg-white rounded-3xl shadow-xl p-8 max-w-2xl w-full">
+    <div class="mb-3 text-gray-400">步驟 2 / 7</div>
+    <h2 class="text-2xl font-bold text-indigo-600 mb-3">生活目標細分</h2>
+    <p class="mb-5 text-gray-700">分別描述你在以下各面向，五十歲時的理想狀態。</p>
+    <form id="aspectsForm">
+      <div class="grid gap-6 grid-cols-1 sm:grid-cols-2">
+        <div>
+          <label class="font-semibold text-indigo-500 mb-1 block">財務</label>
+          <textarea name="finance" rows="2" class="rounded-lg border-gray-300 p-2 w-full mb-2" placeholder="舉例：年收入百萬，投資穩健..."></textarea>
+        </div>
+        <div>
+          <label class="font-semibold text-green-500 mb-1 block">健康</label>
+          <textarea name="health" rows="2" class="rounded-lg border-gray-300 p-2 w-full mb-2" placeholder="舉例：健康有活力，規律運動..."></textarea>
+        </div>
+        <div>
+          <label class="font-semibold text-pink-500 mb-1 block">家庭</label>
+          <textarea name="family" rows="2" class="rounded-lg border-gray-300 p-2 w-full mb-2" placeholder="舉例：家庭和樂，親子互動好..."></textarea>
+        </div>
+        <div>
+          <label class="font-semibold text-yellow-500 mb-1 block">事業</label>
+          <textarea name="career" rows="2" class="rounded-lg border-gray-300 p-2 w-full mb-2" placeholder="舉例：事業穩定成長，熱愛工作..."></textarea>
+        </div>
+        <div>
+          <label class="font-semibold text-blue-400 mb-1 block">人際</label>
+          <textarea name="social" rows="2" class="rounded-lg border-gray-300 p-2 w-full mb-2" placeholder="舉例：朋友互動多，社交活躍..."></textarea>
+        </div>
+        <div>
+          <label class="font-semibold text-purple-500 mb-1 block">心靈／學習</label>
+          <textarea name="mind" rows="2" class="rounded-lg border-gray-300 p-2 w-full mb-2" placeholder="舉例：持續學習，心靈平靜..."></textarea>
+        </div>
+      </div>
+      <button type="button" onclick="nextStep()"
+        class="mt-6 bg-indigo-500 text-white rounded-full py-3 px-8 text-lg shadow hover:bg-indigo-600 transition-all">下一步</button>
+    </form>
+  </div>
+  <script>
+    function nextStep() {
+      const form = document.getElementById('aspectsForm');
+      const data = {};
+      let valid = true;
+      ['finance','health','family','career','social','mind'].forEach(k=>{
+        data[k] = form[k].value.trim();
+        if (!data[k]) valid = false;
+      });
+      if (!valid) { alert("請填寫所有面向的內容"); return; }
+      localStorage.setItem('aspects', JSON.stringify(data));
+      location.href = 'step3.html';
+    }
+  </script>
+</body>
+</html>
