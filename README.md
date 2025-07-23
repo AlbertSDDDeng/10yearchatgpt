@@ -1,2 +1,0 @@
-# 10yearchatgpt
-chatgpt
