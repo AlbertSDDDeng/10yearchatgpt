@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>十年生活規劃工具</title>
+    <!-- 提取外部樣式檔 -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="floating-icons">
+            <div class="floating-icon">
+                <div class="header-icon icon-family">👨‍👩‍👧‍👦</div>
+            </div>
+            <div class="floating-icon">
+                <div class="header-icon icon-work">💼</div>
+            </div>
+            <div class="floating-icon">
+                <div class="header-icon icon-health">💪</div>
+            </div>
+            <div class="floating-icon">
+                <div class="header-icon icon-love">❤️</div>
+            </div>
+            <div class="floating-icon">
+                <div class="header-icon icon-money">💰</div>
+            </div>
+            <div class="floating-icon">
+                <div class="header-icon icon-learn">📚</div>
+            </div>
+        </div>
+        
+        <h1>十年生活規劃</h1>
+        <p>透過科學化的方法，幫助你設定優先級、分配時間，打造理想的人生藍圖</p>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 步驟 0: 50歲願景 -->
+        <div class="step-card active" id="step0" data-step="0">
+            <div class="step-title">
+                <div class="step-number">0</div>
+                想像你五十歲的夢想目標
+            </div>
+            <div class="input-group">
+                <label for="vision50">描述你五十歲時的理想生活：</label>
+                <textarea id="vision50" rows="4" placeholder="想像一下你五十歲時的生活狀態、成就和感受..."></textarea>
+            </div>
+            <div class="buttons">
+                <button class="btn btn-primary" onclick="nextStep()">開始規劃我的人生 →</button>
+            </div>
+        </div>
+
+        <!-- 步驟 1: 10年規劃 -->
+        <div class="step-card hidden" id="step1" data-step="1">
+            <!-- 五十歲願景 (綠色) -->
+            <div class="vision-reminder" id="vision50Reminder">
+                <h4>🎯 你的五十歲願景</h4>
+                <p id="vision50Display"></p>
+            </div>
+            
+            <div class="step-title">
+                <div class="step-number">1</div>
+                十年後的人生規劃
+            </div>
+            
+            <div class="input-group">
+                <label>拖拽調整你的人生領域優先順序：</label>
+                <p style="color: #718096; font-size: 0.9rem; margin-bottom: 15px;">
+                    💡 點擊 "編輯" 可修改項目名稱，點擊 "+" 可新增項目（最多10個）<br>
+                    ⚠️ 至少保留三個人生領域
+                </p>
+                <div class="priorities-container" id="priorities10">
+                    <div class="priority-item" draggable="true">
+                        <span class="priority-text">家庭</span>
+                        <div class="priority-actions">
+                            <button class="edit-btn" onclick="editPriority(this)">✏️ 編輯</button>
+                            <button class="cancel-btn" onclick="removePriority(this)">🗑️ 刪除</button>
+                            <div class="priority-rank">1</div>
+                        </div>
+                    </div>
+                    <div class="priority-item" draggable="true">
+                        <span class="priority-text">工作</span>
+                        <div class="priority-actions">
+                            <button class="edit-btn" onclick="editPriority(this)">✏️ 編輯</button>
+                            <button class="cancel-btn" onclick="removePriority(this)">🗑️ 刪除</button>
+                            <div class="priority-rank">2</div>
+                        </div>
+                    </div>
+                    <div class="priority-item" draggable="true">
+                        <span class="priority-text">愛情</span>
+                        <div class="priority-actions">
+                            <button class="edit-btn" onclick="editPriority(this)">✏️ 編輯</button>
+                            <button class="cancel-btn" onclick="removePriority(this)">🗑️ 刪除</button>
+                            <div class="priority-rank">3</div>
+                        </div>
+                    </div>
+                    <div class="priority-item" draggable="true">
+                        <span class="priority-text">健康</span>
+                        <div class="priority-actions">
+                            <button class="edit-btn" onclick="editPriority(this)">✏️ 編輯</button>
+                            <button class="cancel-btn" onclick="removePriority(this)">🗑️ 刪除</button>
+                            <div class="priority-rank">4</div>
+                        </div>
+                    </div>
+                    <div class="priority-item" draggable="true">
+                        <span class="priority-text">友情</span>
+                        <div class="priority-actions">
+                            <button class="edit-btn" onclick="editPriority(this)">✏️ 編輯</button>
+                            <button class="cancel-btn" onclick="removePriority(this)">🗑️ 刪除</button>
+                            <div class="priority-rank">5</div>
+                        </div>
+                    </div>
+                    <div class="priority-item" draggable="true">
+                        <span class="priority-text">金錢</span>
+                        <div class="priority-actions">
+                            <button class="edit-btn" onclick="editPriority(this)">✏️ 編輯</button>
+                            <button class="cancel-btn" onclick="removePriority(this)">🗑️ 刪除</button>
+                            <div class="priority-rank">6</div>
+                        </div>
+                    </div>
+                    <div class="priority-item" draggable="true">
+                        <span class="priority-text">興趣</span>
+                        <div class="priority-actions">
+                            <button class="edit-btn" onclick="editPriority(this)">✏️ 編輯</button>
+                            <button class="cancel-btn" onclick="removePriority(this)">🗑️ 刪除</button>
+                            <div class="priority-rank">7</div>
+                        </div>
+                    </div>
+                    <div class="priority-item" draggable="true">
+                        <span class="priority-text">名譽</span>
+                        <div class="priority-actions">
+                            <button class="edit-btn" onclick="editPriority(this)">✏️ 編輯</button>
+                            <button class="cancel-btn" onclick="removePriority(this)">🗑️ 刪除</button>
+                            <div class="priority-rank">8</div>
+                        </div>
+                    </div>
+                    <div class="priority-item" draggable="true">
+                        <span class="priority-text">學習</span>
+                        <div class="priority-actions">
+                            <button class="edit-btn" onclick="editPriority(this)">✏️ 編輯</button>
+                            <button class="cancel-btn" onclick="removePriority(this)">🗑️ 刪除</button>
+                            <div class="priority-rank">9</div>
+                        </div>
+                    </div>
+                    <div class="priority-item" draggable="true">
+                        <span class="priority-text">投資</span>
+                        <div class="priority-actions">
+                            <button class="edit-btn" onclick="editPriority(this)">✏️ 編輯</button>
+                            <button class="cancel-btn" onclick="removePriority(this)">🗑️ 刪除</button>
+                            <div class="priority-rank">10</div>
+                        </div>
+                    </div>
+                    <button class="add-priority-btn" type="button" onclick="addNewPriority()">
+                        ➕ 新增人生領域
+                    </button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>每週時間分配（總計168小時）：</label>
+                
+                <!-- 時間警告提示 -->
+                <div class="time-warning" id="timeWarning">
+                    <h4>⚠️ 時間分配警告</h4>
+                    <p id="timeWarningText">你的時間分配已超過一週168小時的限制！</p>
+                </div>
+                
+                <div class="time-allocation" id="timeAllocation10"></div>
+                <div class="total-time">
+                    <strong>總計時間：<span id="totalTime10">10</span> / 168 小時</strong>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="actionPlan10">描述你的十年行動計劃：</label>
+                <p style="color: #718096; font-size: 0.9rem; margin-bottom: 15px;">
+                    💡 請具體描述為了達成這個十年規劃，你將採取哪些重要行動或策略
+                </p>
+                <textarea id="actionPlan10" rows="4" placeholder="例如：建立穩定的工作基礎、培養核心技能、建立人脈網絡、投資理財規劃..."></textarea>
+            </div>
+
+            <div class="satisfaction-check">
+                <label>
+                    <input type="checkbox" id="satisfaction10">
+                    我對這個十年人生規劃滿意，願意為此努力
+                </label>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="prevStep()">← 上一步</button>
+                <button class="btn btn-primary" onclick="nextStep()">下一步 →</button>
+            </div>
+        </div>
+
+        <!-- 步驟 2: 5年規劃 -->
+        <div class="step-card hidden" id="step2" data-step="2">
+            <!-- 五十歲願景 (綠色) -->
+            <div class="vision-reminder" id="vision50Reminder2">
+                <h4>🎯 你的五十歲願景</h4>
+                <p id="vision50Display2"></p>
+            </div>
+            
+            <!-- 十年規劃結果參考 (黃色) -->
+            <div class="reference-summary" id="step1Reference" style="background: linear-gradient(135deg, #fff8e1, #ffecb3); border: 3px solid #ffc107; border-radius: 15px; padding: 25px; margin-bottom: 30px; display: none;">
+                <h4 style="color: #e65100; margin-bottom: 15px; font-size: 1.2rem;">📊 你的十年規劃參考</h4>
+                <div id="step1Summary" style="color: #ef6c00; line-height: 1.6;"></div>
+            </div>
+            
+            <div class="step-title">
+                <div class="step-number">2</div>
+                五年後的人生規劃
+            </div>
+            
+            <div class="input-group">
+                <label>調整你的五年人生領域優先順序：</label>
+                <div class="priorities-container" id="priorities5">
+                    <!-- 會從10年規劃複製過來 -->
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>每週時間分配（總計168小時）：</label>
+                <div class="time-warning" id="timeWarning5">
+                    <h4>⚠️ 時間分配警告</h4>
+                    <p id="timeWarningText5">你的時間分配已超過一週168小時的限制！</p>
+                </div>
+                <div class="time-allocation" id="timeAllocation5"></div>
+                <div class="total-time">
+                    <strong>總計時間：<span id="totalTime5">10</span> / 168 小時</strong>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="actionPlan5">描述你的五年行動計劃：</label>
+                <p style="color: #718096; font-size: 0.9rem; margin-bottom: 15px;">
+                    💡 請具體描述為了達成這個五年規劃，你將採取哪些關鍵行動或里程碑
+                </p>
+                <textarea id="actionPlan5" rows="4" placeholder="例如：專業技能深化、重要項目執行、關係建立與維護、財務目標達成..."></textarea>
+            </div>
+
+            <div class="satisfaction-check">
+                <label>
+                    <input type="checkbox" id="satisfaction5">
+                    我對這個五年人生規劃滿意，願意為此努力
+                </label>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="prevStep()">← 上一步</button>
+                <button class="btn btn-primary" onclick="nextStep()">下一步 →</button>
+            </div>
+        </div>
+
+        <!-- 步驟 3: 1年規劃 -->
+        <div class="step-card hidden" id="step3" data-step="3">
+            <!-- 五十歲願景 (綠色) -->
+            <div class="vision-reminder" id="vision50Reminder3">
+                <h4>🎯 你的五十歲願景</h4>
+                <p id="vision50Display3"></p>
+            </div>
+            
+            <!-- 十年規劃結果參考 (黃色) -->
+            <div class="reference-summary" id="step1Reference3" style="background: linear-gradient(135deg, #fff8e1, #ffecb3); border: 3px solid #ffc107; border-radius: 15px; padding: 25px; margin-bottom: 20px; display: none;">
+                <h4 style="color: #e65100; margin-bottom: 15px; font-size: 1.2rem;">📊 你的十年規劃參考</h4>
+                <div id="step1Summary3" style="color: #ef6c00; line-height: 1.6;"></div>
+            </div>
+            
+            <!-- 五年規劃結果參考 (紫色) -->
+            <div class="reference-summary" id="step2Reference3" style="background: linear-gradient(135deg, #f3e5f5, #e1bee7); border: 3px solid #9c27b0; border-radius: 15px; padding: 25px; margin-bottom: 30px; display: none;">
+                <h4 style="color: #4a148c; margin-bottom: 15px; font-size: 1.2rem;">📋 你的五年規劃參考</h4>
+                <div id="step2Summary3" style="color: #6a1b9a; line-height: 1.6;"></div>
+            </div>
+            
+            <div class="step-title">
+                <div class="step-number">3</div>
+                一年後的人生規劃
+            </div>
+            
+            <div class="input-group">
+                <label>調整你的一年人生領域優先順序：</label>
+                <div class="priorities-container" id="priorities1">
+                    <!-- 會從5年規劃複製過來 -->
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>每週時間分配（總計168小時）：</label>
+                <div class="time-warning" id="timeWarning1">
+                    <h4>⚠️ 時間分配警告</h4>
+                    <p id="timeWarningText1">你的時間分配已超過一週168小時的限制！</p>
+                </div>
+                <div class="time-allocation" id="timeAllocation1"></div>
+                <div class="total-time">
+                    <strong>總計時間：<span id="totalTime1">10</span> / 168 小時</strong>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="actionPlan1">描述你的一年行動計劃：</label>
+                <p style="color: #718096; font-size: 0.9rem; margin-bottom: 15px;">
+                    💡 請具體描述這一年內你將採取哪些具體行動，這是最關鍵的執行計劃
+                </p>
+                <textarea id="actionPlan1" rows="4" placeholder="例如：每月具體目標、季度檢核點、重要習慣養成、學習計劃執行..."></textarea>
+            </div>
+
+            <div class="satisfaction-check">
+                <label>
+                    <input type="checkbox" id="satisfaction1">
+                    我對這個一年人生規劃滿意，願意為此努力
+                </label>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="prevStep()">← 上一步</button>
+                <button class="btn btn-primary" onclick="nextStep()">完成規劃 →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入外部腳本檔，延遲加載 -->
+    <script src="script.js" defer></script>
+</body>
+</html>
