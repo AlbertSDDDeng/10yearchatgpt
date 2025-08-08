@@ -345,7 +345,7 @@ function editImmediateAction() {
     showToast('✏️ 現在可以修改你的三個月行動計劃', 'info');
 }
 
-// 新的下載功能 - 只使用圖片，不使用 PDF
+// 下載功能 - 只使用圖片，完全不使用 PDF
 function downloadPlanAsPDF() {
     if (!planData.immediateActionSaved) {
         showToast('⚠️ 請先儲存你的三個月立即行動計劃才能下載完整規劃！', 'error');
@@ -355,10 +355,14 @@ function downloadPlanAsPDF() {
     // 顯示進度指示器
     var progressIndicator = document.getElementById('downloadProgress');
     if (progressIndicator) {
+        progressIndicator.innerHTML = '<div style="font-size: 1.2rem; color: #333; margin-bottom: 15px;">📸 正在生成圖片...</div>' +
+            '<div style="width: 200px; height: 4px; background: #e9ecef; border-radius: 2px; overflow: hidden;">' +
+            '<div style="width: 60%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); animation: loading 1.5s ease-in-out infinite;"></div>' +
+            '</div>';
         progressIndicator.style.display = 'block';
     }
     
-    // 直接生成圖片，不檢測設備，不使用 PDF
+    // 直接生成圖片，不使用 PDF
     showToast('📸 正在生成規劃圖片...', 'info');
     setTimeout(function() {
         generateImageDownload();
@@ -384,14 +388,10 @@ function generateImageDownload() {
         if (typeof html2canvas !== 'undefined') {
             html2canvas(planContent, {
                 scale: 2,
-                useCORS: false,  // 改為 false 避免 CORS 錯誤
-                allowTaint: false, // 改為 false
+                useCORS: false,  // 避免 CORS 錯誤
+                allowTaint: false, // 避免 tainted canvas
                 backgroundColor: '#ffffff',
-                logging: false,
-                ignoreElements: function(element) {
-                    // 忽略可能造成問題的元素
-                    return element.tagName === 'IMG' && element.src.includes('line-qrcode');
-                }
+                logging: false
             }).then(function(canvas) {
                 // 轉換為圖片並下載
                 try {
@@ -404,13 +404,20 @@ function generateImageDownload() {
                             
                             link.download = '我的人生規劃_' + dateStr + '.png';
                             link.href = url;
+                            link.style.display = 'none';
                             document.body.appendChild(link);
                             link.click();
                             document.body.removeChild(link);
-                            URL.revokeObjectURL(url);
+                            
+                            // 延遲釋放 URL 以確保下載完成
+                            setTimeout(function() {
+                                URL.revokeObjectURL(url);
+                            }, 100);
                             
                             // 清理
-                            document.body.removeChild(planContent);
+                            if (document.body.contains(planContent)) {
+                                document.body.removeChild(planContent);
+                            }
                             
                             // 隱藏進度指示器
                             var progressIndicator = document.getElementById('downloadProgress');
@@ -425,19 +432,25 @@ function generateImageDownload() {
                     }, 'image/png');
                 } catch (blobError) {
                     console.error('Blob generation error:', blobError);
-                    document.body.removeChild(planContent);
+                    if (document.body.contains(planContent)) {
+                        document.body.removeChild(planContent);
+                    }
                     showToast('⚠️ 圖片生成失敗，改用文字版...', 'warning');
                     fallbackTextDownload();
                 }
             }).catch(function(error) {
                 console.error('Image generation error:', error);
-                document.body.removeChild(planContent);
+                if (document.body.contains(planContent)) {
+                    document.body.removeChild(planContent);
+                }
                 showToast('⚠️ 圖片生成失敗，改用文字版...', 'warning');
                 fallbackTextDownload();
             });
         } else {
             // html2canvas 不可用，直接使用文字版
-            document.body.removeChild(planContent);
+            if (document.body.contains(planContent)) {
+                document.body.removeChild(planContent);
+            }
             showToast('⚠️ 圖片庫未載入，改用文字版...', 'warning');
             fallbackTextDownload();
         }
@@ -577,27 +590,18 @@ function generatePlanHTML() {
         '<p style="color: white; text-decoration: underline; margin-bottom: 30px;">職海中的PM旅人 - 過往文章</p>' +
         '</div>' +
         '<div style="display: flex; gap: 30px; align-items: center; justify-content: center; flex-wrap: wrap;">' +
-        // QR Code 區塊 - 使用內嵌 Base64 或純 CSS
+        // QR Code 區塊 - 使用簡化的樣式
         '<div style="background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">' +
-        '<div style="width: 140px; height: 140px; background: white; border: 3px solid #00C300; border-radius: 12px; padding: 20px; box-sizing: border-box; position: relative;">' +
-        // 使用純 CSS 創建簡化的 QR Code 圖案
-        '<div style="width: 100%; height: 100%; display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(7, 1fr); gap: 1px;">' +
-        // 左上角定位圖案
-        '<div style="grid-column: 1/4; grid-row: 1/4; background: #000; border: 2px solid #fff; box-sizing: border-box;"></div>' +
-        // 右上角定位圖案  
-        '<div style="grid-column: 5/8; grid-row: 1/4; background: #000; border: 2px solid #fff; box-sizing: border-box;"></div>' +
-        // 左下角定位圖案
-        '<div style="grid-column: 1/4; grid-row: 5/8; background: #000; border: 2px solid #fff; box-sizing: border-box;"></div>' +
-        // 中間數據區
-        '<div style="grid-column: 4; grid-row: 4; background: #000;"></div>' +
-        '<div style="grid-column: 5; grid-row: 5; background: #000;"></div>' +
-        '<div style="grid-column: 6; grid-row: 4; background: #000;"></div>' +
-        '<div style="grid-column: 4; grid-row: 6; background: #000;"></div>' +
+        '<div style="width: 140px; height: 140px; background: white; border: 3px solid #00C300; border-radius: 12px; position: relative; display: flex; align-items: center; justify-content: center;">' +
+        // 簡化的 QR Code 樣式
+        '<div style="text-align: center;">' +
+        '<div style="font-size: 48px; color: #00C300; margin-bottom: 5px;">📱</div>' +
+        '<div style="color: #00C300; font-weight: bold; font-size: 16px;">掃描 QR Code</div>' +
         '</div>' +
-        // LINE 文字
-        '<div style="position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); background: #00C300; color: white; padding: 2px 12px; border-radius: 10px; font-size: 12px; font-weight: bold;">LINE</div>' +
+        // LINE 標籤
+        '<div style="position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); background: #00C300; color: white; padding: 3px 15px; border-radius: 12px; font-size: 12px; font-weight: bold;">LINE</div>' +
         '</div>' +
-        '<p style="color: #333; font-size: 0.9rem; margin-top: 15px; font-weight: 600;">掃描加LINE</p>' +
+        '<p style="color: #333; font-size: 0.9rem; margin-top: 20px; font-weight: 600;">掃描加LINE</p>' +
         '</div>' +
         '<div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; min-width: 250px;">' +
         '<h4 style="color: white; margin-bottom: 15px;">📞 聯絡方式</h4>' +
@@ -986,6 +990,13 @@ function nextStep() {
             var nextEl = document.getElementById('step' + currentStep);
             if (nextEl) {
                 nextEl.classList.remove('hidden');
+                
+                // 滾動到頁面最上方
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+                
                 setTimeout(function() {
                     nextEl.classList.add('active');
                     if (currentStep === 1) {
@@ -1039,6 +1050,13 @@ function prevStep() {
         var prevEl = document.getElementById('step' + currentStep);
         if (prevEl) {
             prevEl.classList.remove('hidden');
+            
+            // 滾動到頁面最上方
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+            
             setTimeout(function() {
                 prevEl.classList.add('active');
             }, 100);
@@ -1138,9 +1156,64 @@ function removePriority(btn) {
     }
     
     var itemName = priorityItem.querySelector('.priority-text').textContent.trim();
+    
+    // 保存當前的時間分配值
+    var activeStep = document.querySelector('.step-card.active');
+    var savedValues = {};
+    if (activeStep) {
+        var stepId = activeStep.id;
+        var step = stepId === 'step1' ? '10' : (stepId === 'step2' ? '5' : (stepId === 'step3' ? '1' : ''));
+        if (step) {
+            var sliders = document.querySelectorAll('#timeAllocation' + step + ' .slider-container');
+            for (var i = 0; i < sliders.length; i++) {
+                var priority = sliders[i].dataset.priority;
+                if (priority && priority !== itemName) {  // 不保存被刪除項目的值
+                    savedValues[priority] = sliders[i].getValue ? sliders[i].getValue() : 1;
+                }
+            }
+        }
+    }
+    
     container.removeChild(priorityItem);
     updatePriorityRanks();
+    
+    // 重建時間分配並恢復值
+    if (activeStep) {
+        var stepId = activeStep.id;
+        if (stepId === 'step1') {
+            createTimeAllocationWithValues('10', savedValues);
+        } else if (stepId === 'step2') {
+            createTimeAllocationWithValues('5', savedValues);
+        } else if (stepId === 'step3') {
+            createTimeAllocationWithValues('1', savedValues);
+        }
+    }
+    
     showToast('已刪除「' + itemName + '」', 'success');
+}
+
+// 創建時間分配（帶有預設值）
+function createTimeAllocationWithValues(step, savedValues) {
+    step = step || '10';
+    savedValues = savedValues || {};
+    var container = document.getElementById('timeAllocation' + step);
+    var priorities = getPriorities('priorities' + step);
+    if (!container) return;
+    container.innerHTML = '';
+    for (var i = 0; i < priorities.length; i++) {
+        var timeItem = document.createElement('div');
+        timeItem.className = 'time-item';
+        var savedValue = savedValues[priorities[i]] || 1;  // 使用保存的值或默認值1
+        timeItem.innerHTML = '<label>' + priorities[i] + '</label>' +
+            '<div class="slider-container" data-priority="' + priorities[i] + '">' +
+            '<div class="slider-fill"></div>' +
+            '<div class="slider-thumb"></div>' +
+            '</div>' +
+            '<div class="time-display">' + savedValue + ' 小時 (' + (savedValue/168*100).toFixed(1) + '%)</div>';
+        container.appendChild(timeItem);
+        initCustomSlider(timeItem.querySelector('.slider-container'), step, savedValue);
+    }
+    updateTotalTime(step);
 }
 
 // 新增優先級項目
