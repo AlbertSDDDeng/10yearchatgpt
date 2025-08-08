@@ -703,25 +703,341 @@ body:has(#step3.active) .progress-container {
     box-shadow: 0 0 0 3px rgba(96, 125, 139, 0.1) !important;
 }
 
+/* Mobile Responsive Design */
 @media (max-width: 768px) {
     .header h1 {
         font-size: 2.2rem;
     }
     
+    .header p {
+        font-size: 1rem;
+        padding: 0 10px;
+    }
+    
+    .container {
+        padding: 10px;
+    }
+    
     .step-card {
-        padding: 25px;
-        margin: 20px 10px;
+        padding: 20px;
+        margin: 15px 5px;
+        border-radius: 15px;
+    }
+    
+    .step-title {
+        font-size: 1.6rem;
+        flex-direction: column;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    
+    .step-number {
+        margin-right: 0;
+        margin-bottom: 15px;
+        width: 50px;
+        height: 50px;
+        font-size: 1.3rem;
     }
     
     .priorities-container {
         grid-template-columns: 1fr;
+        padding: 15px;
+        gap: 15px;
+    }
+    
+    .priority-item {
+        padding: 12px;
+    }
+    
+    .edit-btn, .cancel-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+    
+    .add-priority-btn {
+        padding: 15px;
+        font-size: 0.9rem;
+    }
+    
+    .time-item {
+        padding: 15px;
+    }
+    
+    .time-item label {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+    
+    .slider-container {
+        height: 30px;
+        margin: 10px 0;
+    }
+    
+    .slider-thumb {
+        width: 24px;
+        height: 24px;
+        border-width: 2px;
+    }
+    
+    .time-display {
+        font-size: 1rem;
+        margin-top: 8px;
+    }
+    
+    .total-time {
+        font-size: 1.1rem;
+        padding: 15px;
+    }
+    
+    .satisfaction-check {
+        padding: 15px;
+    }
+    
+    .btn {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
+    
+    .input-group label {
+        font-size: 1rem;
+    }
+    
+    .input-group textarea {
+        padding: 12px;
+        font-size: 0.9rem;
+        min-height: 80px;
+    }
+    
+    .vision-reminder {
+        padding: 15px;
+    }
+    
+    .vision-reminder h4 {
+        font-size: 1rem;
+    }
+    
+    .vision-reminder p {
+        font-size: 0.9rem;
+    }
+    
+    .reference-summary {
+        padding: 15px !important;
+    }
+    
+    .reference-summary h4 {
+        font-size: 1rem !important;
+    }
+    
+    /* 完成頁面超小屏優化 */
+    #completion {
+        padding: 10px !important;
+    }
+    
+    #completion h3 {
+        font-size: 1.1rem !important;
+    }
+    
+    #completion div[style*="background: linear-gradient(135deg, #667eea"] {
+        padding: 15px !important;
+        margin: 20px 0 !important;
+    }
+    
+    #completion h3[style*="font-size: 1.4rem"] {
+        font-size: 1.2rem !important;
+    }
+    
+    #completion h4[style*="font-size: 1.2rem"] {
+        font-size: 1rem !important;
+    }
+    
+    #completion p[style*="font-size: 1rem"] {
+        font-size: 0.9rem !important;
+    }
+    
+    #completion img[src="line-qrcode.png"] {
+        width: 80px !important;
+        height: 80px !important;
+    }
+    
+    #completion div[style*="width: 120px; height: 120px; background: #00C300"] {
+        width: 80px !important;
+        height: 80px !important;
+        font-size: 12px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 30px 15px;
+    }
+    
+    .header h1 {
+        font-size: 1.8rem;
+        letter-spacing: 1px;
+    }
+    
+    .header p {
+        font-size: 0.9rem;
+    }
+    
+    .container {
+        padding: 5px;
+    }
+    
+    .step-card {
+        padding: 15px;
+        margin: 10px 2px;
+    }
+    
+    .step-title {
+        font-size: 1.4rem;
+    }
+    
+    .step-number {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+    }
+    
+    .priorities-container {
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    .priority-item {
+        padding: 15px;
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .priority-text {
+        margin-bottom: 10px;
+    }
+    
+    .priority-actions {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
     }
     
     .time-allocation {
         grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .time-item {
+        padding: 20px;
+    }
+    
+    .slider-container {
+        height: 35px;
+        margin: 12px 0;
+    }
+    
+    .slider-thumb {
+        width: 28px;
+        height: 28px;
+        border-width: 3px;
     }
     
     .buttons {
         flex-direction: column;
+        gap: 15px;
+    }
+    
+    .btn {
+        padding: 15px 25px;
+        font-size: 1rem;
+        width: 100%;
+    }
+    
+    .satisfaction-check {
+        padding: 20px;
+    }
+    
+    .satisfaction-check label {
+        flex-direction: column;
+        gap: 15px;
+        font-size: 1.1rem;
+    }
+    
+    .satisfaction-check input[type="checkbox"] {
+        margin-right: 0;
+        transform: scale(1.8);
+    }
+    
+    .toast {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        font-size: 0.9rem;
+    }
+    
+    .input-group textarea {
+        padding: 15px;
+        font-size: 1rem;
+        min-height: 100px;
+    }
+    
+    .vision-reminder {
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+    
+    .vision-reminder h4 {
+        font-size: 1.1rem;
+    }
+    
+    .vision-reminder p {
+        font-size: 1rem;
+    }
+    
+    .reference-summary {
+        padding: 20px !important;
+        margin-bottom: 25px !important;
+    }
+    
+    .reference-summary h4 {
+        font-size: 1.1rem !important;
+    }
+    
+    /* 完成頁面手機優化 */
+    #completion .buttons {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    #completion .btn {
+        width: 100%;
+        padding: 15px;
+        font-size: 1rem;
+    }
+    
+    /* 職涯諮詢區塊手機優化 */
+    #completion div[style*="background: linear-gradient(135deg, #667eea"] {
+        padding: 20px !important;
+        margin: 30px 0 !important;
+    }
+    
+    #completion div[style*="display: flex; flex-wrap: wrap"] {
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+    
+    #completion div[style*="text-align: center; background: white"] {
+        padding: 15px !important;
+    }
+    
+    #completion img[src="line-qrcode.png"] {
+        width: 100px !important;
+        height: 100px !important;
+    }
+    
+    #completion div[style*="width: 120px; height: 120px; background: #00C300"] {
+        width: 100px !important;
+        height: 100px !important;
+        font-size: 14px !important;
     }
 }

@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>十年生活規劃工具</title>
-    <!-- 提取外部樣式檔 -->
     <link rel="stylesheet" href="style.css">
+    <!-- HTML 轉圖片庫 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -327,7 +328,20 @@
         </div>
     </div>
 
-    <!-- 引入外部腳本檔，延遲加載 -->
-    <script src="script.js" defer></script>
+    <!-- 下載進度指示器 -->
+    <div id="downloadProgress" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10001; text-align: center;">
+        <div style="font-size: 1.2rem; color: #333; margin-bottom: 15px;">📄 正在生成 PDF...</div>
+        <div style="width: 200px; height: 4px; background: #e9ecef; border-radius: 2px; overflow: hidden;">
+            <div style="width: 60%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); animation: loading 1.5s ease-in-out infinite;"></div>
+        </div>
+        <style>
+            @keyframes loading {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(200%); }
+            }
+        </style>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
