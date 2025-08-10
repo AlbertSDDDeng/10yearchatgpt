@@ -19,18 +19,251 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeDragAndDrop();
 });
 
-// 取得拖拽後的元素位置
-function getDragAfterElement(container, y) {
-    var draggableElements = Array.from(container.querySelectorAll('.priority-item:not([style*="opacity: 0.5"])'));
-    return draggableElements.reduce(function(closest, child) {
-        var box = child.getBoundingClientRect();
-        var offset = y - box.top - box.height / 2;
-        if (offset < 0 && offset > closest.offset) {
-            return { offset: offset, element: child };
-        } else {
-            return closest;
+// 下一步功能
+function nextStep() {
+    try {
+        if (currentStep === 0) {
+            var visionInput = document.getElementById('vision50');
+            if (!visionInput) {
+                showToast('找不到願景輸入框！', 'error');
+                return;
+            }
+            
+            var vision = visionInput.value.trim();
+            if (!vision) {
+                showToast('請先填寫你的五十歲願景再繼續！', 'error');
+                return;
+            }
+            
+            planData.vision50 = vision;
+            
+            var visionDisplay = document.getElementById('vision50Display');
+            var visionReminder = document.getElementById('vision50Reminder');
+            if (visionDisplay) visionDisplay.textContent = vision;
+            if (visionReminder) visionReminder.style.display = 'block';
+            
+            var header = document.querySelector('.header');
+            var progressContainer = document.querySelector('.progress-container');
+            if (header) header.style.display = 'none';
+            if (progressContainer) progressContainer.style.display = 'block';
+            
+            createTimeAllocation();
+        } else if (currentStep === 1) {
+            var sliders = document.querySelectorAll('#timeAllocation10 .slider-container');
+            var hasAdjustedTime = false;
+            for (var i = 0; i < sliders.length; i++) {
+                if (sliders[i].getValue && sliders[i].getValue() > 1) {
+                    hasAdjustedTime = true;
+                }
+            }
+            
+            if (!hasAdjustedTime) {
+                showToast('⏰ 請先調整你的十年時間分配！', 'error');
+                return;
+            }
+            
+            var total = calculateTotalTime();
+            if (total > 168) {
+                showToast('⚠️ 時間分配超過限制！', 'error');
+                return;
+            }
+            if (total < 10) {
+                showToast('⏰ 你的時間投入似乎過少！', 'error');
+                return;
+            }
+            
+            var actionPlanInput = document.getElementById('actionPlan10');
+            if (!actionPlanInput || !actionPlanInput.value.trim()) {
+                showToast('📝 請填寫你的十年行動計劃再繼續！', 'error');
+                return;
+            }
+            
+            planData.actionPlan10 = actionPlanInput.value.trim();
+            
+            var satisfactionCheckbox = document.getElementById('satisfaction10');
+            if (!satisfactionCheckbox || !satisfactionCheckbox.checked) {
+                showToast('✅ 請確認你對這個十年規劃滿意後再繼續！', 'error');
+                return;
+            }
+            
+            showToast('🎉 恭喜完成十年規劃！', 'success');
+        } else if (currentStep === 2) {
+            var sliders5 = document.querySelectorAll('#timeAllocation5 .slider-container');
+            var hasAdjustedTime5 = false;
+            for (var i = 0; i < sliders5.length; i++) {
+                if (sliders5[i].getValue && sliders5[i].getValue() > 1) {
+                    hasAdjustedTime5 = true;
+                }
+            }
+            
+            if (!hasAdjustedTime5) {
+                showToast('⏰ 請先調整你的五年時間分配！', 'error');
+                return;
+            }
+            
+            var total5 = calculateTotalTime('5');
+            if (total5 > 168) {
+                showToast('⚠️ 時間分配超過限制！', 'error');
+                return;
+            }
+            if (total5 < 10) {
+                showToast('⏰ 你的時間投入似乎過少！', 'error');
+                return;
+            }
+            
+            var actionPlan5Input = document.getElementById('actionPlan5');
+            if (!actionPlan5Input || !actionPlan5Input.value.trim()) {
+                showToast('📝 請填寫你的五年行動計劃再繼續！', 'error');
+                return;
+            }
+            
+            planData.actionPlan5 = actionPlan5Input.value.trim();
+            
+            var satisfaction5Checkbox = document.getElementById('satisfaction5');
+            if (!satisfaction5Checkbox || !satisfaction5Checkbox.checked) {
+                showToast('✅ 請確認你對這個五年規劃滿意後再繼續！', 'error');
+                return;
+            }
+            
+            showToast('🚀 很棒！五年規劃完成！', 'success');
+        } else if (currentStep === 3) {
+            var sliders1 = document.querySelectorAll('#timeAllocation1 .slider-container');
+            var hasAdjustedTime1 = false;
+            for (var i = 0; i < sliders1.length; i++) {
+                if (sliders1[i].getValue && sliders1[i].getValue() > 1) {
+                    hasAdjustedTime1 = true;
+                }
+            }
+            
+            if (!hasAdjustedTime1) {
+                showToast('⏰ 請調整你的一年時間分配！', 'error');
+                return;
+            }
+            
+            var total1 = calculateTotalTime('1');
+            if (total1 > 168) {
+                showToast('⚠️ 時間分配超過限制！', 'error');
+                return;
+            }
+            if (total1 < 10) {
+                showToast('⏰ 你的時間投入似乎過少！', 'error');
+                return;
+            }
+            
+            var actionPlan1Input = document.getElementById('actionPlan1');
+            if (!actionPlan1Input || !actionPlan1Input.value.trim()) {
+                showToast('📝 請填寫你的一年行動計劃再繼續！', 'error');
+                return;
+            }
+            
+            planData.actionPlan1 = actionPlan1Input.value.trim();
+            
+            var satisfaction1Checkbox = document.getElementById('satisfaction1');
+            if (!satisfaction1Checkbox || !satisfaction1Checkbox.checked) {
+                showToast('✅ 請確認你對這個一年規劃滿意後再繼續！', 'error');
+                return;
+            }
+            
+            planData.priorities = getPriorities();
+            planData.timeAllocation = getTimeAllocation();
+            planData.satisfaction = true;
+            
+            showToast('🎉 完整規劃完成！', 'success');
+            
+            createCompletionPage();
+            return;
         }
-    }, { offset: Number.NEGATIVE_INFINITY }).element;
+        
+        if (currentStep < totalSteps) {
+            var allSteps = document.querySelectorAll('.step-card');
+            for (var i = 0; i < allSteps.length; i++) {
+                allSteps[i].classList.add('hidden');
+                allSteps[i].classList.remove('active');
+            }
+            currentStep++;
+            var nextEl = document.getElementById('step' + currentStep);
+            if (nextEl) {
+                nextEl.classList.remove('hidden');
+                
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+                
+                setTimeout(function() {
+                    nextEl.classList.add('active');
+                    if (currentStep === 1) {
+                        createTimeAllocation('10');
+                    } else if (currentStep === 2) {
+                        var visionDisplay2 = document.getElementById('vision50Display2');
+                        var visionReminder2 = document.getElementById('vision50Reminder2');
+                        if (visionDisplay2 && planData.vision50) {
+                            visionDisplay2.textContent = planData.vision50;
+                        }
+                        if (visionReminder2) {
+                            visionReminder2.style.display = 'block';
+                        }
+                        showStep1Reference();
+                        copyPrioritiesToNextStep('priorities10', 'priorities5');
+                        setTimeout(function() { 
+                            createTimeAllocation('5'); 
+                        }, 300);
+                    } else if (currentStep === 3) {
+                        var visionDisplay3 = document.getElementById('vision50Display3');
+                        var visionReminder3 = document.getElementById('vision50Reminder3');
+                        if (visionDisplay3 && planData.vision50) {
+                            visionDisplay3.textContent = planData.vision50;
+                        }
+                        if (visionReminder3) {
+                            visionReminder3.style.display = 'block';
+                        }
+                        showStep1And2Reference();
+                        copyPrioritiesToNextStep('priorities5', 'priorities1');
+                        setTimeout(function() { createTimeAllocation('1'); }, 300);
+                    }
+                }, 100);
+            }
+            updateProgress();
+        }
+    } catch (error) {
+        console.error('下一步出错:', error);
+        showToast('操作出现错误，请重试', 'error');
+    }
+}
+
+// 上一步功能
+function prevStep() {
+    if (currentStep > 0) {
+        var allSteps = document.querySelectorAll('.step-card');
+        for (var i = 0; i < allSteps.length; i++) {
+            allSteps[i].classList.add('hidden');
+            allSteps[i].classList.remove('active');
+        }
+        currentStep--;
+        var prevEl = document.getElementById('step' + currentStep);
+        if (prevEl) {
+            prevEl.classList.remove('hidden');
+            
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+            
+            setTimeout(function() {
+                prevEl.classList.add('active');
+            }, 100);
+        }
+        updateProgress();
+    }
+}
+
+// 更新進度條
+function updateProgress() {
+    var progress = (currentStep / totalSteps) * 100;
+    var progressFill = document.getElementById('progressFill');
+    if (progressFill) {
+        progressFill.style.width = progress + '%';
+    }
 }
 
 // 複製優先級到下一步驟
@@ -44,6 +277,18 @@ function copyPrioritiesToNextStep(fromId, toId) {
     if (fromItems.length === 0) {
         return;
     }
+    
+    // 保存當前時間分配
+    var savedTimeAllocation = {};
+    var currentStep = fromId.replace('priorities', '');
+    var sliders = document.querySelectorAll('#timeAllocation' + currentStep + ' .slider-container');
+    for (var i = 0; i < sliders.length; i++) {
+        var priority = sliders[i].dataset.priority;
+        if (priority && sliders[i].getValue) {
+            savedTimeAllocation[priority] = sliders[i].getValue();
+        }
+    }
+    
     toContainer.innerHTML = '';
     for (var i = 0; i < fromItems.length; i++) {
         var priorityText = fromItems[i].textContent.trim();
@@ -64,12 +309,16 @@ function copyPrioritiesToNextStep(fromId, toId) {
     addButton.onclick = addNewPriority;
     addButton.innerHTML = '➕ 新增人生領域';
     toContainer.appendChild(addButton);
+    
+    // 保存時間分配
+    window.savedTimeAllocationForNextStep = savedTimeAllocation;
+    
     setTimeout(function() {
         initializeDragAndDrop();
     }, 100);
 }
 
-// 顯示第一步規劃結果作為參考
+// 顯示第一步規劃結果
 function showStep1Reference() {
     var priorities = getPriorities('priorities10');
     var timeAllocation = getTimeAllocation('10');
@@ -96,7 +345,7 @@ function showStep1Reference() {
     referenceContainer.style.display = 'block';
 }
 
-// 顯示第一步和第二步規劃結果作為參考
+// 顯示第一步和第二步規劃結果
 function showStep1And2Reference() {
     var priorities1 = getPriorities('priorities10');
     var timeAllocation1 = getTimeAllocation('10');
@@ -345,119 +594,119 @@ function editImmediateAction() {
     showToast('✏️ 現在可以修改你的三個月行動計劃', 'info');
 }
 
-// 下載功能 - 只使用圖片，完全不使用 PDF
+// 下載功能
 function downloadPlanAsPDF() {
     if (!planData.immediateActionSaved) {
         showToast('⚠️ 請先儲存你的三個月立即行動計劃才能下載完整規劃！', 'error');
         return;
     }
     
-    // 顯示進度指示器
     var progressIndicator = document.getElementById('downloadProgress');
     if (progressIndicator) {
-        progressIndicator.innerHTML = '<div style="font-size: 1.2rem; color: #333; margin-bottom: 15px;">📸 正在生成圖片...</div>' +
-            '<div style="width: 200px; height: 4px; background: #e9ecef; border-radius: 2px; overflow: hidden;">' +
-            '<div style="width: 60%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); animation: loading 1.5s ease-in-out infinite;"></div>' +
-            '</div>';
         progressIndicator.style.display = 'block';
     }
     
-    // 直接生成圖片，不使用 PDF
     showToast('📸 正在生成規劃圖片...', 'info');
     setTimeout(function() {
         generateImageDownload();
     }, 500);
 }
 
-// 移除所有 PDF 相關程式碼，這個函數不需要了
-
 // 生成圖片下載
 function generateImageDownload() {
-    // 創建一個包含完整規劃的 div
-    var planContent = document.createElement('div');
-    planContent.id = 'planContentForImage';
-    planContent.style.cssText = 'position: absolute; left: -9999px; width: 1200px; padding: 40px; background: white; font-family: "Microsoft JhengHei", sans-serif;';
+    var planContent = null;
     
-    // 生成內容HTML
-    planContent.innerHTML = generatePlanHTML();
-    document.body.appendChild(planContent);
-    
-    // 等待一下讓內容渲染
-    setTimeout(function() {
-        // 檢查 html2canvas 是否可用
-        if (typeof html2canvas !== 'undefined') {
-            html2canvas(planContent, {
-                scale: 2,
-                useCORS: false,  // 避免 CORS 錯誤
-                allowTaint: false, // 避免 tainted canvas
-                backgroundColor: '#ffffff',
-                logging: false
-            }).then(function(canvas) {
-                // 轉換為圖片並下載
-                try {
-                    canvas.toBlob(function(blob) {
-                        if (blob) {
-                            var url = URL.createObjectURL(blob);
-                            var link = document.createElement('a');
-                            var now = new Date();
-                            var dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
-                            
-                            link.download = '我的人生規劃_' + dateStr + '.png';
-                            link.href = url;
-                            link.style.display = 'none';
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                            
-                            // 延遲釋放 URL 以確保下載完成
-                            setTimeout(function() {
-                                URL.revokeObjectURL(url);
-                            }, 100);
-                            
-                            // 清理
-                            if (document.body.contains(planContent)) {
-                                document.body.removeChild(planContent);
+    try {
+        planContent = document.createElement('div');
+        planContent.id = 'planContentForImage';
+        planContent.style.cssText = 'position: absolute; left: -9999px; width: 1200px; padding: 40px; background: white; font-family: "Microsoft JhengHei", sans-serif; line-height: 1.6;';
+        
+        planContent.innerHTML = generatePlanHTML();
+        document.body.appendChild(planContent);
+        
+        setTimeout(function() {
+            if (typeof html2canvas !== 'undefined') {
+                html2canvas(planContent, {
+                    scale: 1.5,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    width: 1280,
+                    height: planContent.scrollHeight + 100
+                }).then(function(canvas) {
+                    try {
+                        canvas.toBlob(function(blob) {
+                            if (blob) {
+                                downloadBlob(blob);
+                                cleanupAndHideProgress(planContent);
+                                showToast('📸 規劃圖片已成功下載！', 'success');
+                            } else {
+                                throw new Error('無法生成圖片 Blob');
                             }
-                            
-                            // 隱藏進度指示器
-                            var progressIndicator = document.getElementById('downloadProgress');
-                            if (progressIndicator) {
-                                progressIndicator.style.display = 'none';
-                            }
-                            
-                            showToast('📸 規劃圖片已成功下載！', 'success');
-                        } else {
-                            throw new Error('無法生成圖片 Blob');
-                        }
-                    }, 'image/png');
-                } catch (blobError) {
-                    console.error('Blob generation error:', blobError);
-                    if (document.body.contains(planContent)) {
-                        document.body.removeChild(planContent);
+                        }, 'image/png', 0.95);
+                    } catch (error) {
+                        console.error('Canvas to blob error:', error);
+                        cleanupAndFallback(planContent);
                     }
-                    showToast('⚠️ 圖片生成失敗，改用文字版...', 'warning');
-                    fallbackTextDownload();
-                }
-            }).catch(function(error) {
-                console.error('Image generation error:', error);
-                if (document.body.contains(planContent)) {
-                    document.body.removeChild(planContent);
-                }
-                showToast('⚠️ 圖片生成失敗，改用文字版...', 'warning');
-                fallbackTextDownload();
-            });
-        } else {
-            // html2canvas 不可用，直接使用文字版
-            if (document.body.contains(planContent)) {
-                document.body.removeChild(planContent);
+                }).catch(function(error) {
+                    console.error('html2canvas error:', error);
+                    cleanupAndFallback(planContent);
+                });
+            } else {
+                console.warn('html2canvas not available');
+                cleanupAndFallback(planContent);
             }
-            showToast('⚠️ 圖片庫未載入，改用文字版...', 'warning');
-            fallbackTextDownload();
-        }
+        }, 200);
+        
+    } catch (error) {
+        console.error('Error in generateImageDownload:', error);
+        cleanupAndFallback(planContent);
+    }
+}
+
+// 下載 Blob 的輔助函數
+function downloadBlob(blob) {
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    var now = new Date();
+    var dateStr = now.getFullYear() + 
+        String(now.getMonth() + 1).padStart(2, '0') + 
+        String(now.getDate()).padStart(2, '0');
+    
+    link.download = '我的人生規劃_' + dateStr + '.png';
+    link.href = url;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    setTimeout(function() {
+        URL.revokeObjectURL(url);
     }, 100);
 }
 
-// 生成規劃的 HTML 內容（用於圖片生成）
+// 清理並隱藏進度條
+function cleanupAndHideProgress(planContent) {
+    if (planContent && document.body.contains(planContent)) {
+        document.body.removeChild(planContent);
+    }
+    var progressIndicator = document.getElementById('downloadProgress');
+    if (progressIndicator) {
+        progressIndicator.style.display = 'none';
+    }
+}
+
+// 清理並回退到文字版
+function cleanupAndFallback(planContent) {
+    cleanupAndHideProgress(planContent);
+    showToast('⚠️ 圖片生成失敗，改用文字版下載...', 'warning');
+    setTimeout(function() {
+        fallbackTextDownload();
+    }, 500);
+}
+
+// 生成規劃的 HTML 內容
 function generatePlanHTML() {
     var priorities10 = getPriorities('priorities10');
     var timeAllocation10 = getTimeAllocation('10');
@@ -580,7 +829,7 @@ function generatePlanHTML() {
             '</div>';
     }
     
-    // 職涯諮詢資訊（包含 QR Code）
+    // 職涯諮詢資訊
     html += '<div style="background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 15px; padding: 30px; margin-top: 40px; color: white;">' +
         '<h2 style="color: white; text-align: center; margin-bottom: 20px;">🌟 對你的人生與生涯有迷惘嗎？</h2>' +
         '<div style="text-align: center;">' +
@@ -589,25 +838,17 @@ function generatePlanHTML() {
         '<p style="color: white; font-size: 0.9rem; margin-bottom: 10px;">📚 我的職涯文章分享</p>' +
         '<p style="color: white; text-decoration: underline; margin-bottom: 30px;">職海中的PM旅人 - 過往文章</p>' +
         '</div>' +
-        '<div style="display: flex; gap: 30px; align-items: center; justify-content: center; flex-wrap: wrap;">' +
-        // QR Code 區塊 - 使用簡化的樣式
-        '<div style="background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">' +
-        '<div style="width: 140px; height: 140px; background: white; border: 3px solid #00C300; border-radius: 12px; position: relative; display: flex; align-items: center; justify-content: center;">' +
-        // 簡化的 QR Code 樣式
-        '<div style="text-align: center;">' +
-        '<div style="font-size: 48px; color: #00C300; margin-bottom: 5px;">📱</div>' +
-        '<div style="color: #00C300; font-weight: bold; font-size: 16px;">掃描 QR Code</div>' +
+        '<div style="background: rgba(255,255,255,0.2); padding: 25px; border-radius: 15px; text-align: center;">' +
+        '<h4 style="color: white; margin-bottom: 20px; font-size: 1.3rem;">📞 聯絡方式</h4>' +
+        '<div style="background: #00C300; color: white; padding: 20px; border-radius: 15px; margin: 20px auto; max-width: 400px;">' +
+        '<div style="font-size: 2rem; margin-bottom: 10px;">📱</div>' +
+        '<p style="margin: 10px 0; font-size: 1.2rem; font-weight: bold;">LINE ID：@tnb0485u</p>' +
+        '<p style="margin: 5px 0; font-size: 0.9rem;">（第6個字是數字0）</p>' +
+        '<div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 10px; margin-top: 15px;">' +
+        '<p style="margin: 0; font-size: 0.9rem;">掃描QR Code或直接加LINE</p>' +
         '</div>' +
-        // LINE 標籤
-        '<div style="position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); background: #00C300; color: white; padding: 3px 15px; border-radius: 12px; font-size: 12px; font-weight: bold;">LINE</div>' +
         '</div>' +
-        '<p style="color: #333; font-size: 0.9rem; margin-top: 20px; font-weight: 600;">掃描加LINE</p>' +
-        '</div>' +
-        '<div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; min-width: 250px;">' +
-        '<h4 style="color: white; margin-bottom: 15px;">📞 聯絡方式</h4>' +
-        '<p style="color: white; margin-bottom: 10px;">LINE ID：<strong>@tnb0485u</strong><br><span style="font-size: 0.9rem;">（第6個字是數字0）</span></p>' +
-        '<div style="background: #00C300; color: white; padding: 10px 20px; border-radius: 20px; display: inline-block; margin-top: 10px;">💬 點我直接加LINE</div>' +
-        '</div>' +
+        '<p style="color: white; font-size: 1rem; margin-top: 20px;">💬 點擊連結直接加LINE：https://lin.ee/L0c0DAz</p>' +
         '</div>' +
         '<p style="color: white; text-align: center; margin-top: 30px; font-size: 1.1rem; font-weight: bold;">🚢 期待與你在職海中一起乘風破浪！</p>' +
         '</div>';
@@ -615,7 +856,7 @@ function generatePlanHTML() {
     return html;
 }
 
-// 純文字下載（最後備用方案）
+// 純文字下載
 function fallbackTextDownload() {
     try {
         var textContent = generateTextPlan();
@@ -632,42 +873,20 @@ function fallbackTextDownload() {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
         
-        // 隱藏進度指示器
         var progressIndicator = document.getElementById('downloadProgress');
         if (progressIndicator) {
             progressIndicator.style.display = 'none';
         }
         
-        showToast('📄 已下載文字版規劃（完整內容）！', 'success');
+        showToast('📄 已下載文字版規劃！', 'success');
     } catch (error) {
         console.error('Text download error:', error);
-        // 最終備援：顯示內容讓用戶複製
         var progressIndicator = document.getElementById('downloadProgress');
         if (progressIndicator) {
             progressIndicator.style.display = 'none';
         }
         showToast('⚠️ 下載失敗，請手動複製畫面內容', 'error');
-        // 可以考慮彈出一個視窗顯示文字內容
-        showTextInModal();
     }
-}
-
-// 在彈窗中顯示文字（最終備援）
-function showTextInModal() {
-    var modalHTML = '<div id="textModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px;">' +
-        '<div style="background: white; max-width: 800px; max-height: 80vh; overflow-y: auto; padding: 30px; border-radius: 15px; position: relative;">' +
-        '<button onclick="document.getElementById(\'textModal\').remove()" style="position: absolute; top: 10px; right: 10px; background: #f44336; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; cursor: pointer;">×</button>' +
-        '<h2 style="color: #333; margin-bottom: 20px;">📄 你的人生規劃（請手動複製）</h2>' +
-        '<textarea style="width: 100%; height: 400px; padding: 15px; border: 2px solid #ddd; border-radius: 10px; font-family: monospace; font-size: 14px;" readonly>' + 
-        generateTextPlan() + 
-        '</textarea>' +
-        '<p style="color: #666; margin-top: 15px; text-align: center;">💡 請全選（Ctrl+A）並複製（Ctrl+C）上方文字</p>' +
-        '</div>' +
-        '</div>';
-    
-    var modalDiv = document.createElement('div');
-    modalDiv.innerHTML = modalHTML;
-    document.body.appendChild(modalDiv.firstChild);
 }
 
 // 生成純文字版規劃
@@ -680,7 +899,6 @@ function generateTextPlan() {
     content += '─────────────────────────\n';
     content += planData.vision50 + '\n\n';
     
-    // 十年規劃
     var priorities10 = getPriorities('priorities10');
     var timeAllocation10 = getTimeAllocation('10');
     var total10 = calculateTotalTime('10');
@@ -699,7 +917,6 @@ function generateTextPlan() {
     }
     content += '\n';
     
-    // 五年規劃
     var priorities5 = getPriorities('priorities5');
     var timeAllocation5 = getTimeAllocation('5');
     var total5 = calculateTotalTime('5');
@@ -718,7 +935,6 @@ function generateTextPlan() {
     }
     content += '\n';
     
-    // 一年規劃
     var priorities1 = getPriorities('priorities1');
     var timeAllocation1 = getTimeAllocation('1');
     var total1 = calculateTotalTime('1');
@@ -737,7 +953,6 @@ function generateTextPlan() {
     }
     content += '\n';
     
-    // 三個月立即行動
     if (planData.immediateAction3months) {
         content += '💡 三個月立即行動\n';
         content += '─────────────────────────\n';
@@ -751,7 +966,6 @@ function generateTextPlan() {
     content += '• 每季檢視進度，確保朝著五十歲願景前進\n';
     content += '• 記錄實際時間分配，與規劃進行對比調整\n\n';
     
-    // 職涯諮詢資訊
     content += '🌟 對你的人生與生涯有迷惘嗎？\n';
     content += '====================================\n';
     content += '**您好，我是職海中的PM旅人**\n\n';
@@ -794,277 +1008,6 @@ function showToast(message, type) {
     }, 3000);
 }
 
-// 更新進度條
-function updateProgress() {
-    var progress = (currentStep / totalSteps) * 100;
-    var progressFill = document.getElementById('progressFill');
-    if (progressFill) {
-        progressFill.style.width = progress + '%';
-    }
-}
-
-// 顯示時間警告
-function showTimeWarning(total, step) {
-    step = step || '10';
-    var timeWarning = document.getElementById('timeWarning' + (step === '10' ? '' : step));
-    var timeWarningText = document.getElementById('timeWarningText' + (step === '10' ? '' : step));
-    
-    if (total > 168) {
-        if (timeWarningText) {
-            timeWarningText.textContent = '你的時間分配已超過一週168小時的限制！目前總計 ' + total + ' 小時，請調整時間分配。';
-        }
-        if (timeWarning) {
-            timeWarning.classList.add('show');
-        }
-        showToast('⚠️ 時間超過限制！目前 ' + total + ' 小時，請調整至168小時以內', 'error');
-    } else {
-        if (timeWarning) {
-            timeWarning.classList.remove('show');
-        }
-    }
-}
-
-// 下一步功能
-function nextStep() {
-    try {
-        if (currentStep === 0) {
-            var visionInput = document.getElementById('vision50');
-            if (!visionInput) {
-                showToast('找不到願景輸入框！', 'error');
-                return;
-            }
-            
-            var vision = visionInput.value.trim();
-            if (!vision) {
-                showToast('請先填寫你的五十歲願景再繼續！', 'error');
-                return;
-            }
-            
-            planData.vision50 = vision;
-            
-            var visionDisplay = document.getElementById('vision50Display');
-            var visionReminder = document.getElementById('vision50Reminder');
-            if (visionDisplay) visionDisplay.textContent = vision;
-            if (visionReminder) visionReminder.style.display = 'block';
-            
-            var header = document.querySelector('.header');
-            var progressContainer = document.querySelector('.progress-container');
-            if (header) header.style.display = 'none';
-            if (progressContainer) progressContainer.style.display = 'block';
-            
-            createTimeAllocation();
-        } else if (currentStep === 1) {
-            var sliders = document.querySelectorAll('#timeAllocation10 .slider-container');
-            var hasAdjustedTime = false;
-            for (var i = 0; i < sliders.length; i++) {
-                if (sliders[i].getValue && sliders[i].getValue() > 1) {
-                    hasAdjustedTime = true;
-                }
-            }
-            
-            if (!hasAdjustedTime) {
-                showToast('⏰ 請先調整你的十年時間分配！根據優先順序思考每個人生領域需要投入多少時間，這是規劃的關鍵步驟', 'error');
-                return;
-            }
-            
-            var total = calculateTotalTime();
-            if (total > 168) {
-                showToast('⚠️ 時間分配超過限制！目前總計 ' + total + ' 小時，一週只有 168 小時。請調整時間分配。', 'error');
-                showTimeWarning(total);
-                return;
-            }
-            if (total < 10) {
-                showToast('⏰ 你的時間投入似乎過少！目前總計 ' + total + ' 小時，建議至少投入 10 小時以上。', 'error');
-                return;
-            }
-            
-            var actionPlanInput = document.getElementById('actionPlan10');
-            if (!actionPlanInput || !actionPlanInput.value.trim()) {
-                showToast('📝 請填寫你的十年行動計劃再繼續！', 'error');
-                return;
-            }
-            
-            planData.actionPlan10 = actionPlanInput.value.trim();
-            
-            var satisfactionCheckbox = document.getElementById('satisfaction10');
-            if (!satisfactionCheckbox || !satisfactionCheckbox.checked) {
-                showToast('✅ 請確認你對這個十年規劃滿意後再繼續！', 'error');
-                return;
-            }
-            
-            showToast('🎉 恭喜完成十年規劃！現在讓我們聚焦到五年計畫，十年太久，先想想這五年對你最重要的是什麼？', 'success');
-        } else if (currentStep === 2) {
-            var sliders5 = document.querySelectorAll('#timeAllocation5 .slider-container');
-            var hasAdjustedTime5 = false;
-            for (var i = 0; i < sliders5.length; i++) {
-                if (sliders5[i].getValue && sliders5[i].getValue() > 1) {
-                    hasAdjustedTime5 = true;
-                }
-            }
-            
-            if (!hasAdjustedTime5) {
-                showToast('⏰ 請先調整你的五年時間分配！根據優先順序思考每個人生領域需要投入多少時間，這是規劃的關鍵步驟', 'error');
-                return;
-            }
-            
-            var total5 = calculateTotalTime('5');
-            if (total5 > 168) {
-                showToast('⚠️ 時間分配超過限制！目前總計 ' + total5 + ' 小時，請調整時間分配。', 'error');
-                return;
-            }
-            if (total5 < 10) {
-                showToast('⏰ 你的時間投入似乎過少！目前總計 ' + total5 + ' 小時，建議至少投入 10 小時以上。', 'error');
-                return;
-            }
-            
-            var actionPlan5Input = document.getElementById('actionPlan5');
-            if (!actionPlan5Input || !actionPlan5Input.value.trim()) {
-                showToast('📝 請填寫你的五年行動計劃再繼續！', 'error');
-                return;
-            }
-            
-            planData.actionPlan5 = actionPlan5Input.value.trim();
-            
-            var satisfaction5Checkbox = document.getElementById('satisfaction5');
-            if (!satisfaction5Checkbox || !satisfaction5Checkbox.checked) {
-                showToast('✅ 請確認你對這個五年規劃滿意後再繼續！', 'error');
-                return;
-            }
-            
-            showToast('🚀 很棒！五年規劃完成！現在讓我們更具體一點，專注在這一年最想達成的目標！', 'success');
-        } else if (currentStep === 3) {
-            var sliders1 = document.querySelectorAll('#timeAllocation1 .slider-container');
-            var hasAdjustedTime1 = false;
-            for (var i = 0; i < sliders1.length; i++) {
-                if (sliders1[i].getValue && sliders1[i].getValue() > 1) {
-                    hasAdjustedTime1 = true;
-                }
-            }
-            
-            if (!hasAdjustedTime1) {
-                showToast('⏰ 請調整你的一年時間分配！這是最關鍵的執行年，請仔細分配每個領域的時間投入', 'error');
-                return;
-            }
-            
-            var total1 = calculateTotalTime('1');
-            if (total1 > 168) {
-                showToast('⚠️ 時間分配超過限制！目前總計 ' + total1 + ' 小時，請調整時間分配。', 'error');
-                return;
-            }
-            if (total1 < 10) {
-                showToast('⏰ 你的時間投入似乎過少！目前總計 ' + total1 + ' 小時，建議至少投入 10 小時以上。', 'error');
-                return;
-            }
-            
-            var actionPlan1Input = document.getElementById('actionPlan1');
-            if (!actionPlan1Input || !actionPlan1Input.value.trim()) {
-                showToast('📝 請填寫你的一年行動計劃再繼續！', 'error');
-                return;
-            }
-            
-            planData.actionPlan1 = actionPlan1Input.value.trim();
-            
-            var satisfaction1Checkbox = document.getElementById('satisfaction1');
-            if (!satisfaction1Checkbox || !satisfaction1Checkbox.checked) {
-                showToast('✅ 請確認你對這個一年規劃滿意後再繼續！', 'error');
-                return;
-            }
-            
-            planData.priorities = getPriorities();
-            planData.timeAllocation = getTimeAllocation();
-            planData.satisfaction = true;
-            
-            showToast('🎉 完整規劃完成！', 'success');
-            
-            createCompletionPage();
-            return;
-        }
-        
-        if (currentStep < totalSteps) {
-            var allSteps = document.querySelectorAll('.step-card');
-            for (var i = 0; i < allSteps.length; i++) {
-                allSteps[i].classList.add('hidden');
-                allSteps[i].classList.remove('active');
-            }
-            currentStep++;
-            var nextEl = document.getElementById('step' + currentStep);
-            if (nextEl) {
-                nextEl.classList.remove('hidden');
-                
-                // 滾動到頁面最上方
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-                
-                setTimeout(function() {
-                    nextEl.classList.add('active');
-                    if (currentStep === 1) {
-                        createTimeAllocation('10');
-                    } else if (currentStep === 2) {
-                        var visionDisplay2 = document.getElementById('vision50Display2');
-                        var visionReminder2 = document.getElementById('vision50Reminder2');
-                        if (visionDisplay2 && planData.vision50) {
-                            visionDisplay2.textContent = planData.vision50;
-                        }
-                        if (visionReminder2) {
-                            visionReminder2.style.display = 'block';
-                        }
-                        showStep1Reference();
-                        copyPrioritiesToNextStep('priorities10', 'priorities5');
-                        setTimeout(function() { 
-                            createTimeAllocation('5'); 
-                        }, 300);
-                    } else if (currentStep === 3) {
-                        var visionDisplay3 = document.getElementById('vision50Display3');
-                        var visionReminder3 = document.getElementById('vision50Reminder3');
-                        if (visionDisplay3 && planData.vision50) {
-                            visionDisplay3.textContent = planData.vision50;
-                        }
-                        if (visionReminder3) {
-                            visionReminder3.style.display = 'block';
-                        }
-                        showStep1And2Reference();
-                        copyPrioritiesToNextStep('priorities5', 'priorities1');
-                        setTimeout(function() { createTimeAllocation('1'); }, 300);
-                    }
-                }, 100);
-            }
-            updateProgress();
-        }
-    } catch (error) {
-        console.error('下一步出错:', error);
-        showToast('操作出现错误，请重试', 'error');
-    }
-}
-
-// 上一步功能
-function prevStep() {
-    if (currentStep > 0) {
-        var allSteps = document.querySelectorAll('.step-card');
-        for (var i = 0; i < allSteps.length; i++) {
-            allSteps[i].classList.add('hidden');
-            allSteps[i].classList.remove('active');
-        }
-        currentStep--;
-        var prevEl = document.getElementById('step' + currentStep);
-        if (prevEl) {
-            prevEl.classList.remove('hidden');
-            
-            // 滾動到頁面最上方
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-            
-            setTimeout(function() {
-                prevEl.classList.add('active');
-            }, 100);
-        }
-        updateProgress();
-    }
-}
-
 // 編輯優先級項目
 function editPriority(btn) {
     var priorityItem = btn.closest('.priority-item');
@@ -1072,6 +1015,23 @@ function editPriority(btn) {
     var currentText = textSpan.textContent.trim();
     
     if (priorityItem.querySelector('input')) return;
+    
+    // 保存當前的時間分配值
+    var activeStep = document.querySelector('.step-card.active');
+    var savedValues = {};
+    if (activeStep) {
+        var stepId = activeStep.id;
+        var step = stepId === 'step1' ? '10' : (stepId === 'step2' ? '5' : (stepId === 'step3' ? '1' : ''));
+        if (step) {
+            var sliders = document.querySelectorAll('#timeAllocation' + step + ' .slider-container');
+            for (var i = 0; i < sliders.length; i++) {
+                var priority = sliders[i].dataset.priority;
+                if (priority) {
+                    savedValues[priority] = sliders[i].getValue ? sliders[i].getValue() : 1;
+                }
+            }
+        }
+    }
     
     var input = document.createElement('input');
     input.type = 'text';
@@ -1112,10 +1072,27 @@ function editPriority(btn) {
             }
         }
         
+        // 更新時間分配的key
+        if (savedValues[currentText] !== undefined) {
+            savedValues[newText] = savedValues[currentText];
+            delete savedValues[currentText];
+        }
+        
         textSpan.textContent = newText;
         restoreDisplay();
         showToast('編輯成功！', 'success');
-        createTimeAllocation();
+        
+        // 重建時間分配並恢復值
+        if (activeStep) {
+            var stepId = activeStep.id;
+            if (stepId === 'step1') {
+                createTimeAllocationWithValues('10', savedValues);
+            } else if (stepId === 'step2') {
+                createTimeAllocationWithValues('5', savedValues);
+            } else if (stepId === 'step3') {
+                createTimeAllocationWithValues('1', savedValues);
+            }
+        }
     }
     
     function cancelEdit() {
@@ -1192,30 +1169,6 @@ function removePriority(btn) {
     showToast('已刪除「' + itemName + '」', 'success');
 }
 
-// 創建時間分配（帶有預設值）
-function createTimeAllocationWithValues(step, savedValues) {
-    step = step || '10';
-    savedValues = savedValues || {};
-    var container = document.getElementById('timeAllocation' + step);
-    var priorities = getPriorities('priorities' + step);
-    if (!container) return;
-    container.innerHTML = '';
-    for (var i = 0; i < priorities.length; i++) {
-        var timeItem = document.createElement('div');
-        timeItem.className = 'time-item';
-        var savedValue = savedValues[priorities[i]] || 1;  // 使用保存的值或默認值1
-        timeItem.innerHTML = '<label>' + priorities[i] + '</label>' +
-            '<div class="slider-container" data-priority="' + priorities[i] + '">' +
-            '<div class="slider-fill"></div>' +
-            '<div class="slider-thumb"></div>' +
-            '</div>' +
-            '<div class="time-display">' + savedValue + ' 小時 (' + (savedValue/168*100).toFixed(1) + '%)</div>';
-        container.appendChild(timeItem);
-        initCustomSlider(timeItem.querySelector('.slider-container'), step, savedValue);
-    }
-    updateTotalTime(step);
-}
-
 // 新增優先級項目
 function addNewPriority() {
     var activeStep = document.querySelector('.step-card.active');
@@ -1275,6 +1228,23 @@ function confirmNewItem(btn) {
         }
     }
     
+    // 保存當前的時間分配值
+    var activeStep = document.querySelector('.step-card.active');
+    var savedValues = {};
+    if (activeStep) {
+        var stepId = activeStep.id;
+        var step = stepId === 'step1' ? '10' : (stepId === 'step2' ? '5' : (stepId === 'step3' ? '1' : ''));
+        if (step) {
+            var sliders = document.querySelectorAll('#timeAllocation' + step + ' .slider-container');
+            for (var i = 0; i < sliders.length; i++) {
+                var priority = sliders[i].dataset.priority;
+                if (priority) {
+                    savedValues[priority] = sliders[i].getValue ? sliders[i].getValue() : 1;
+                }
+            }
+        }
+    }
+    
     var rank = newItem.querySelector('.priority-rank').textContent;
     newItem.innerHTML = '<span class="priority-text">' + newText + '</span>' +
         '<div class="priority-actions">' +
@@ -1286,15 +1256,18 @@ function confirmNewItem(btn) {
     
     initializeDragAndDrop();
     
-    var activeStep = document.querySelector('.step-card.active');
+    // 給新項目設定默認值1小時
+    savedValues[newText] = 1;
+    
+    // 重建時間分配並恢復值
     if (activeStep) {
         var stepId = activeStep.id;
         if (stepId === 'step1') {
-            createTimeAllocation('10');
+            createTimeAllocationWithValues('10', savedValues);
         } else if (stepId === 'step2') {
-            createTimeAllocation('5');
+            createTimeAllocationWithValues('5', savedValues);
         } else if (stepId === 'step3') {
-            createTimeAllocation('1');
+            createTimeAllocationWithValues('1', savedValues);
         }
     }
     
@@ -1324,6 +1297,23 @@ function updatePriorityRanks(containerId) {
     var selector = containerId ? '#' + containerId + ' .priority-item' : '.priority-item';
     var items = document.querySelectorAll(selector);
     
+    // 保存當前的時間分配值
+    var activeStep = document.querySelector('.step-card.active');
+    var savedValues = {};
+    if (activeStep) {
+        var stepId = activeStep.id;
+        var step = stepId === 'step1' ? '10' : (stepId === 'step2' ? '5' : (stepId === 'step3' ? '1' : ''));
+        if (step) {
+            var sliders = document.querySelectorAll('#timeAllocation' + step + ' .slider-container');
+            for (var i = 0; i < sliders.length; i++) {
+                var priority = sliders[i].dataset.priority;
+                if (priority) {
+                    savedValues[priority] = sliders[i].getValue ? sliders[i].getValue() : 1;
+                }
+            }
+        }
+    }
+    
     for (var i = 0; i < items.length; i++) {
         var rank = items[i].querySelector('.priority-rank');
         if (rank) {
@@ -1331,17 +1321,41 @@ function updatePriorityRanks(containerId) {
         }
     }
     
-    var activeStep = document.querySelector('.step-card.active');
+    // 重建時間分配並恢復值
     if (activeStep) {
         var stepId = activeStep.id;
         if (stepId === 'step1') {
-            setTimeout(function() { createTimeAllocation('10'); }, 100);
+            setTimeout(function() { createTimeAllocationWithValues('10', savedValues); }, 100);
         } else if (stepId === 'step2') {
-            setTimeout(function() { createTimeAllocation('5'); }, 100);
+            setTimeout(function() { createTimeAllocationWithValues('5', savedValues); }, 100);
         } else if (stepId === 'step3') {
-            setTimeout(function() { createTimeAllocation('1'); }, 100);
+            setTimeout(function() { createTimeAllocationWithValues('1', savedValues); }, 100);
         }
     }
+}
+
+// 創建時間分配（帶有預設值）
+function createTimeAllocationWithValues(step, savedValues) {
+    step = step || '10';
+    savedValues = savedValues || window.savedTimeAllocationForNextStep || {};
+    var container = document.getElementById('timeAllocation' + step);
+    var priorities = getPriorities('priorities' + step);
+    if (!container) return;
+    container.innerHTML = '';
+    for (var i = 0; i < priorities.length; i++) {
+        var timeItem = document.createElement('div');
+        timeItem.className = 'time-item';
+        var savedValue = savedValues[priorities[i]] || 1;
+        timeItem.innerHTML = '<label>' + priorities[i] + '</label>' +
+            '<div class="slider-container" data-priority="' + priorities[i] + '">' +
+            '<div class="slider-fill"></div>' +
+            '<div class="slider-thumb"></div>' +
+            '</div>' +
+            '<div class="time-display">' + savedValue + ' 小時 (' + (savedValue/168*100).toFixed(1) + '%)</div>';
+        container.appendChild(timeItem);
+        initCustomSlider(timeItem.querySelector('.slider-container'), step, savedValue);
+    }
+    updateTotalTime(step);
 }
 
 // 創建時間分配
@@ -1350,20 +1364,30 @@ function createTimeAllocation(step) {
     var container = document.getElementById('timeAllocation' + step);
     var priorities = getPriorities('priorities' + step);
     if (!container) return;
+    
+    // 如果有保存的時間分配，使用它
+    var savedValues = window.savedTimeAllocationForNextStep || {};
+    
     container.innerHTML = '';
     for (var i = 0; i < priorities.length; i++) {
         var timeItem = document.createElement('div');
         timeItem.className = 'time-item';
+        var initialValue = savedValues[priorities[i]] || 1;
         timeItem.innerHTML = '<label>' + priorities[i] + '</label>' +
             '<div class="slider-container" data-priority="' + priorities[i] + '">' +
             '<div class="slider-fill"></div>' +
             '<div class="slider-thumb"></div>' +
             '</div>' +
-            '<div class="time-display">1 小時 (0.6%)</div>';
+            '<div class="time-display">' + initialValue + ' 小時 (' + (initialValue/168*100).toFixed(1) + '%)</div>';
         container.appendChild(timeItem);
-        initCustomSlider(timeItem.querySelector('.slider-container'), step, 1);
+        initCustomSlider(timeItem.querySelector('.slider-container'), step, initialValue);
     }
     updateTotalTime(step);
+    
+    // 清除保存的值，避免影響後續操作
+    if (window.savedTimeAllocationForNextStep) {
+        delete window.savedTimeAllocationForNextStep;
+    }
 }
 
 // 初始化自定義滑桿
@@ -1491,6 +1515,41 @@ function getPriorities(containerId) {
         priorities.push(items[i].textContent.trim());
     }
     return priorities;
+}
+
+// 顯示時間警告
+function showTimeWarning(total, step) {
+    step = step || '10';
+    var timeWarning = document.getElementById('timeWarning' + (step === '10' ? '' : step));
+    var timeWarningText = document.getElementById('timeWarningText' + (step === '10' ? '' : step));
+    
+    if (total > 168) {
+        if (timeWarningText) {
+            timeWarningText.textContent = '你的時間分配已超過一週168小時的限制！目前總計 ' + total + ' 小時，請調整時間分配。';
+        }
+        if (timeWarning) {
+            timeWarning.classList.add('show');
+        }
+        showToast('⚠️ 時間超過限制！目前 ' + total + ' 小時，請調整至168小時以內', 'error');
+    } else {
+        if (timeWarning) {
+            timeWarning.classList.remove('show');
+        }
+    }
+}
+
+// 取得拖拽後的元素位置
+function getDragAfterElement(container, y) {
+    var draggableElements = Array.from(container.querySelectorAll('.priority-item:not([style*="opacity: 0.5"])'));
+    return draggableElements.reduce(function(closest, child) {
+        var box = child.getBoundingClientRect();
+        var offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
 // 初始化拖放功能
